@@ -1,0 +1,13 @@
+{
+   "name" : "mintomic",
+   "version" : "1.0.0",
+   "description" : "C99 translation of Geoff Pike's and Jyrki Alakuijala's FarmHash.",
+   "homepage" : "https://github.com/mulle-c/mintomic",
+   "bugs" : "https://github.com/mulle-c/mintomic/issues",
+   "keywords" : [],
+   "license" : "BSD-3-Clause",
+   "repository" : {
+      "type" : "git",
+      "url" : "github:mulle-c/mintomic"
+   }
+}
