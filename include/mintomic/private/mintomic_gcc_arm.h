@@ -85,7 +85,7 @@ MINT_C_INLINE void mint_store_32_relaxed(mint_atomic32_t *object, uint32_t desir
         uint32_t original;
         // The "Ir" constraint allows the compiler to pass "expected" to the cmp instruction as an immediate
         // operand if it can. Otherwise, it falls back to loading it into a register first.
-        asm volatile("1:     ldrex   %0, [%3]\n"
+        __asm__ volatile("1:     ldrex   %0, [%3]\n"
                      "       cmp     %0, %4\n"
                      "       bne     2f\n"
                      "       strex   %1, %5, [%3]\n"
@@ -102,7 +102,7 @@ MINT_C_INLINE void mint_store_32_relaxed(mint_atomic32_t *object, uint32_t desir
     {
         uint32_t status;
         uint32_t original, desired;
-        asm volatile("1:     ldrex   %0, [%4]\n"
+        __asm__ volatile("1:     ldrex   %0, [%4]\n"
                      "       mov     %3, %0\n"
                      "       add     %3, %5\n"
                      "       strex   %1, %3, [%4]\n"
@@ -118,7 +118,7 @@ MINT_C_INLINE void mint_store_32_relaxed(mint_atomic32_t *object, uint32_t desir
     {
         uint32_t status;
         uint32_t original, desired;
-        asm volatile("1:     ldrex   %0, [%4]\n"
+        __asm__ volatile("1:     ldrex   %0, [%4]\n"
                      "       mov     %3, %0\n"
                      "       and     %3, %5\n"
                      "       strex   %1, %3, [%4]\n"
@@ -134,7 +134,7 @@ MINT_C_INLINE void mint_store_32_relaxed(mint_atomic32_t *object, uint32_t desir
     {
         uint32_t status;
         uint32_t original, desired;
-        asm volatile("1:     ldrex   %0, [%4]\n"
+        __asm__ volatile("1:     ldrex   %0, [%4]\n"
                      "       mov     %3, %0\n"
                      "       orr     %3, %5\n"
                      "       strex   %1, %3, [%4]\n"

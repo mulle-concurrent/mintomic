@@ -1,0 +1,20 @@
+{
+   "name" : "mintomic",
+   "version" : "1.0.0",
+   "description" : "mintomic is an API for low-level lock-free programming in C and C++",
+   "keywords" : [ "atomics" ],
+   "license" : "MIT",
+   "repo" : "mulle-concurrent/mintomic",
+   "src" : [
+      "include/mintomic/core.h",
+      "include/mintomic/platform_detect.h",
+      "include/mintomic/mintomic.h",
+      "include/mintomic/private/core_gcc.h",
+      "include/mintomic/private/mintomic_gcc_arm.h",
+      "include/mintomic/private/mintomic_stdint.h",
+      "include/mintomic/private/mintomic_msvc.h",
+      "include/mintomic/private/core_msvc.h",
+      "include/mintomic/private/mintomic_gcc_x86-64.h",
+      "src/mintomic/mintomic_gcc.c"
+   ]
+}

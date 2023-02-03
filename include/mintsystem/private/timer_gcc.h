@@ -53,7 +53,7 @@ MINT_C_INLINE void mint_yield_hw_thread()
 {
     // Only implemented on x86/64
 #if MINT_CPU_X86 || MINT_CPU_X64
-    asm volatile("pause");
+    __asm__ volatile("pause");
 #endif
 }
 

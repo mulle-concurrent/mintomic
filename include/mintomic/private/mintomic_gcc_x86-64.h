@@ -26,17 +26,17 @@ extern "C" {
 //  Fences
 //-------------------------------------
 #define mint_signal_fence_consume() (0)
-#define mint_signal_fence_acquire() asm volatile("" ::: "memory")
-#define mint_signal_fence_release() asm volatile("" ::: "memory")
-#define mint_signal_fence_seq_cst() asm volatile("" ::: "memory")
+#define mint_signal_fence_acquire() __asm__ volatile("" ::: "memory")
+#define mint_signal_fence_release() __asm__ volatile("" ::: "memory")
+#define mint_signal_fence_seq_cst() __asm__ volatile("" ::: "memory")
 
 #define mint_thread_fence_consume() (0)
-#define mint_thread_fence_acquire() asm volatile("" ::: "memory")
-#define mint_thread_fence_release() asm volatile("" ::: "memory")
+#define mint_thread_fence_acquire() __asm__ volatile("" ::: "memory")
+#define mint_thread_fence_release() __asm__ volatile("" ::: "memory")
 #if MINT_CPU_X64
-#define mint_thread_fence_seq_cst() asm volatile("lock; orl $0, (%%rsp)" ::: "memory")
+#define mint_thread_fence_seq_cst() __asm__ volatile("lock; orl $0, (%%rsp)" ::: "memory")
 #else
-#define mint_thread_fence_seq_cst() asm volatile("lock; orl $0, (%%esp)" ::: "memory")
+#define mint_thread_fence_seq_cst() __asm__ volatile("lock; orl $0, (%%esp)" ::: "memory")
 #endif
 
 
@@ -72,7 +72,7 @@ MINT_C_INLINE uint32_t mint_compare_exchange_strong_32_relaxed(mint_atomic32_t *
     // http://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html
     // http://download.intel.com/products/processor/manual/325383.pdf
     uint32_t original;
-    asm volatile("lock; cmpxchgl %2, %1"
+    __asm__ volatile("lock; cmpxchgl %2, %1"
                  : "=a"(original), "+m"(object->_nonatomic)
                  : "q"(desired), "0"(expected));
     return original;
@@ -83,7 +83,7 @@ MINT_C_INLINE uint32_t mint_exchange_32_relaxed(mint_atomic32_t *object, uint32_
     // No lock prefix is necessary for XCHG.
     // See mint_fetch_add_32_relaxed for explanation of constraints.
     uint32_t original;
-    asm volatile("xchgl %0, %1"
+    __asm__ volatile("xchgl %0, %1"
                  : "=r"(original), "+m"(object->_nonatomic)
                  : "0"(desired));
     return original;
@@ -98,7 +98,7 @@ MINT_C_INLINE uint32_t mint_fetch_add_32_relaxed(mint_atomic32_t *object, int32_
     // may be deleted. ("+m" is apparently not enough hint to the compiler that the asm
     // block has side effects on memory.)
     uint32_t original;
-    asm volatile("lock; xaddl %0, %1"
+    __asm__ volatile("lock; xaddl %0, %1"
                  : "=r"(original), "+m"(object->_nonatomic)
                  : "0"(operand));
     return original;
@@ -110,7 +110,7 @@ MINT_C_INLINE uint32_t mint_fetch_and_32_relaxed(mint_atomic32_t *object, uint32
     // If we don't specify &, the compiler may assign eax to input operand %3 as well.
     uint32_t original;
     register uint32_t temp;
-    asm volatile("1:     movl    %1, %0\n"
+    __asm__ volatile("1:     movl    %1, %0\n"
                  "       movl    %0, %2\n"
                  "       andl    %3, %2\n"
                  "       lock; cmpxchgl %2, %1\n"
@@ -124,7 +124,7 @@ MINT_C_INLINE uint32_t mint_fetch_or_32_relaxed(mint_atomic32_t *object, uint32_
 {
     uint32_t original;
     register uint32_t temp;
-    asm volatile("1:     movl    %1, %0\n"
+    __asm__ volatile("1:     movl    %1, %0\n"
                  "       movl    %0, %2\n"
                  "       orl     %3, %2\n"
                  "       lock; cmpxchgl %2, %1\n"
@@ -157,7 +157,7 @@ MINT_C_INLINE uint32_t mint_fetch_or_32_relaxed(mint_atomic32_t *object, uint32_
         // On x64, we can work with 64-bit values directly.
         // It's basically the same as the 32-bit versions except for the q suffix on opcodes.
         uint64_t original;
-        asm volatile("lock; cmpxchgq %2, %1"
+        __asm__ volatile("lock; cmpxchgq %2, %1"
                      : "=a"(original), "+m"(object->_nonatomic)
                      : "q"(desired), "0"(expected));
         return original;
@@ -166,7 +166,7 @@ MINT_C_INLINE uint32_t mint_fetch_or_32_relaxed(mint_atomic32_t *object, uint32_
     MINT_C_INLINE uint64_t mint_exchange_64_relaxed(mint_atomic64_t *object, uint64_t desired)
     {
         uint64_t original;
-        asm volatile("xchgq %0, %1"
+        __asm__ volatile("xchgq %0, %1"
                      : "=r"(original), "+m"(object->_nonatomic)
                      : "0"(desired));
         return original;
@@ -175,7 +175,7 @@ MINT_C_INLINE uint32_t mint_fetch_or_32_relaxed(mint_atomic32_t *object, uint32_
     MINT_C_INLINE uint64_t mint_fetch_add_64_relaxed(mint_atomic64_t *object, int64_t operand)
     {
         uint64_t original;
-        asm volatile("lock; xaddq %0, %1"
+        __asm__ volatile("lock; xaddq %0, %1"
                      : "=r"(original), "+m"(object->_nonatomic)
                      : "0"(operand));
         return original;
@@ -185,7 +185,7 @@ MINT_C_INLINE uint32_t mint_fetch_or_32_relaxed(mint_atomic32_t *object, uint32_
     {
         uint64_t original;
         register uint64_t temp;
-        asm volatile("1:     movq    %1, %0\n"
+        __asm__ volatile("1:     movq    %1, %0\n"
                      "       movq    %0, %2\n"
                      "       andq    %3, %2\n"
                      "       lock; cmpxchgq %2, %1\n"
@@ -199,7 +199,7 @@ MINT_C_INLINE uint32_t mint_fetch_or_32_relaxed(mint_atomic32_t *object, uint32_
     {
         uint64_t original;
         register uint64_t temp;
-        asm volatile("1:     movq    %1, %0\n"
+        __asm__ volatile("1:     movq    %1, %0\n"
                      "       movq    %0, %2\n"
                      "       orq     %3, %2\n"
                      "       lock; cmpxchgq %2, %1\n"
@@ -223,7 +223,7 @@ MINT_C_INLINE uint32_t mint_fetch_or_32_relaxed(mint_atomic32_t *object, uint32_
         // "m"(object->_nonatomic) loads object's address into a register, which becomes %1, before the block.
         // No other registers are modified.
         uint64_t original;
-        asm volatile("movl %%ebx, %%eax\n"
+        __asm__ volatile("movl %%ebx, %%eax\n"
                      "movl %%ecx, %%edx\n"
                      "lock; cmpxchg8b %1"
                      : "=&A"(original)
@@ -243,7 +243,7 @@ MINT_C_INLINE uint32_t mint_fetch_or_32_relaxed(mint_atomic32_t *object, uint32_
         // "b" and "c" move desired to ECX:EBX before the block.
         // "A"(expected) loads the original value of object->_nonatomic into EAX:EDX before the block.
         uint64_t expected = object->_nonatomic;
-        asm volatile("1:    cmpxchg8b %0\n"
+        __asm__ volatile("1:    cmpxchg8b %0\n"
                      "      jne 1b"
                      : "=m"(object->_nonatomic)
                      : "b"((uint32_t) desired), "c"((uint32_t) (desired >> 32)), "A"(expected));
@@ -257,7 +257,7 @@ MINT_C_INLINE uint32_t mint_fetch_or_32_relaxed(mint_atomic32_t *object, uint32_
         // "b" and "c" move desired to ECX:EBX before the block.
         // "0"(expected) puts expected in the same registers as "=a"(original), which are EAX:EDX, before the block.
         uint64_t original;
-        asm volatile("lock; cmpxchg8b %1"
+        __asm__ volatile("lock; cmpxchg8b %1"
                      : "=A"(original), "+m"(object->_nonatomic)
                      : "b"((uint32_t) desired), "c"((uint32_t) (desired >> 32)), "0"(expected));
         return original;
